@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <fragment
+        android:name="com.abhi.barcode.fragment.BarCodeFragment"
+        android:layout_width="match_parent"
+        android:layout_height="224dp"
+        android:layout_weight="1.25" />
+
+    <TextView
+        android:id="@+id/text_qr"
+        android:layout_width="wrap_content"
+        android:layout_height="228dp"
+        android:background="@color/light_blue"
+        android:gravity="center_horizontal|center_vertical"
+        android:padding="10dp"
+        android:text="@string/qr_explain"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+
+</LinearLayout>
