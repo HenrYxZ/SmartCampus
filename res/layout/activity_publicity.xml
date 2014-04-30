@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/transparent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/publicityTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Titulo"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <ImageView
+        android:id="@+id/bigImage"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.02"
+        android:src="@drawable/back" />
+
+    <Button
+        android:id="@+id/showMap"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ver en el mapa" />
+
+    <EditText
+        android:id="@+id/shareText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.21"
+        android:ems="10"
+        android:hint="Agrega un comentario y comparte esta noticia con tus amigos de Facebook"
+        android:inputType="textMultiLine" >
+
+        <requestFocus />
+    </EditText>
+
+    <Button
+        android:id="@+id/shareButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:background="@color/fblue"
+        android:gravity="center"
+        android:text="@string/share"
+        android:textColor="@android:color/white"
+        android:textStyle="bold" />
+
+</LinearLayout>
