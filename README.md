@@ -1,4 +1,0 @@
-SmartCampus
-===========
-
-Proyecto de especialidad
