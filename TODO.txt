@@ -1,0 +1,4 @@
+- Mejorar la cuenta de usuario, con SharedPreferences, del facebook para que no pida aceptar la app cada vez
+- Mostrar archivos y links en puntos del mapa
+- Hacer una app más estable
+- Resolver conflicto con cuenta por defecto de Facebook

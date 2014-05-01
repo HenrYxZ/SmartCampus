@@ -142,7 +142,7 @@ public class DBHelper {
 		int bCount= c.getCount();
 
 		if(bCount == 0){
-			Log.e("ERROR", "NO ENTRA");
+			Log.i("OJO", "NO SE ENCONTRARON EDIFICIOS");
 			return null;
 		}
 

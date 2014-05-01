@@ -95,6 +95,7 @@ public class Map extends Activity implements SConstants {
 
 	private void loadBuildings() {
 		Building[] buildings= dbh.getBuildings(context);
+		if(buildings == null) return;
 		pos = new Polygon[buildings.length];
 		Log.e("QWERTYUI", String.valueOf(buildings.length));
 		for(int i=0;i<buildings.length;i++)
@@ -247,7 +248,6 @@ public class Map extends Activity implements SConstants {
 	public List<LatLng> decodePoly(String encoded) {
 		// Nos aseguramos de no tener mal ingresados el poligono
 		encoded.trim();
-		Log.i("Encoded string", encoded);
 		List<LatLng> poly = new ArrayList<LatLng>();
 		int index = 0, len = encoded.length();
 		int lat = 0, lng = 0;
@@ -264,6 +264,9 @@ public class Map extends Activity implements SConstants {
 
 			shift = 0;
 			result = 0;
+			//agregado contra errores
+			if(index == len)
+				break;
 			do {
 				b = encoded.charAt(index++) - 63;
 				result |= (b & 0x1f) << shift;

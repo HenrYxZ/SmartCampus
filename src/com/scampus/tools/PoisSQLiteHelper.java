@@ -44,7 +44,7 @@ public class PoisSQLiteHelper extends SQLiteOpenHelper {
 			COLUMN_LAT+" DOUBLE, " +
 			COLUMN_LNG+" DOUBLE)";
 
-	//Sentencia SQL para crear la tabla de Pors
+	//Sentencia SQL para crear la tabla de Buildings
 	String sqlCreate3 = "CREATE TABLE Buildings (" +
 			COLUMN_ID+" integer primary key autoincrement," +
 			COLUMN_NAME+" text, " +
