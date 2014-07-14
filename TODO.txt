@@ -1,4 +1,8 @@
-- Mejorar la cuenta de usuario, con SharedPreferences, del facebook para que no pida aceptar la app cada vez
-- Mostrar archivos y links en puntos del mapa
-- Hacer una app más estable
+- Hacer ratings para eventos
 - Resolver conflicto con cuenta por defecto de Facebook
+- Cambiar configuración de lenguaje usando strings.xml de res
+- Mandar JSON de token de usuario junto con un provider para usar G+ o Twitter
+- Arreglar SQLite para que actualice las filas ya creadas pero que cambiaron algo
+
+17-6-2014
+-Poner fechas a eventos

@@ -86,7 +86,7 @@ public class Building {
 					"VALUES ("+this.id+", '"+this.name+"', '"+this.description+"', '"+this.campus+"', '"+
 					this.polygon+"', "+this.center.x+", "+this.center.y+")");
 		} catch (SQLException e) {
-			Log.e("Building","ID ya existe");
+			Log.i("Buildings", e.getMessage());
 		}
 		db.close();
 	}

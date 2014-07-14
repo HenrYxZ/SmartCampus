@@ -3,9 +3,12 @@
 
     <string name="get_started">Para empezar, debes iniciar sesión con tu cuenta de Facebook</string>
     <string name="app_id">1407365282825170</string>
+    <string name="action_send">Enviar</string>
+    <string name="action_cancel">Cancelar</string>
     <string name="settings">Settings</string>
     <string name="logout">Logout</string>
     <string name="google_map_key">AIzaSyAzlz_5YO81iweq8RLmQofkMY63F9zOXhs</string>
+    <string name="sending_progress">Enviado datos&#8230;</string>
     <string name="app_name">Smart Campus</string>
     <string name="loginButtonText">Entrar con Facebook</string>
     <string name="action_settings">Settings</string>
@@ -13,12 +16,42 @@
     <string name="recycle_button">Recicla!</string>
     <string name="acount_button">Perfil</string>
     <string name="claims_button">Reclamos</string>
-    <string name="share">Compartir en Facebook</string>
+    <string name="fb_share">Compartir en Facebook</string>
+    <string name="google_share">Compartir en Google+</string>
+    <string name="fb_share_hint">Agrega un comentario y comparte esta noticia con tus amigos de Facebook</string>
+    <string name="google_share_hint">Agrega un comentario y comparte esta noticia con tus amigos de Google+</string>
+    
     <string name="qr_explain">        Enfoca los códigos QR que se encuentran en los puntos de reciclaje o eventos de tu campus.\n
         Al reciclar y asistir a los eventos que tu universidad tiene para tí, estarás ganando puntos en Smart Campus.</string>
     <string name="claimHint">Escribe aquí tu denuncia para que juntos mejoremos nuestra comunidad,
         tus denuncias serán revisados por los administradores de SmartCampus en tu Universidad</string>
+    <string name="suggestionHint">Escribe aquí tu sugerencia para que juntos mejoremos esta aplicación,
+        tus sugerencias serán revisadass por los administradores de SmartCampus y luego te enviarán sus respuestas.</string>
+    <string name="suggestionDescription">Envíanos tus sugerencias con respecto a cualquier tema</string>
+	<string name="web_server_url">http://smartcampus-admin.herokuapp.com</string>
+    <string name="action_register">Registarse</string>
+    <string name="title_activity_login">Sign in</string>
 
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="prompt_pin">PIN</string>
+    <string name="action_login"><b>Entrar</b></string>
+    <string name="action_forgot_password">Recuperar contraseña</string>
+    <string name="login_progress_signing_in">Conectando&#8230;</string>
+    <string name="error_invalid_email">El email es inválido</string>
+    <string name="error_incorrect_password">Contraseña incorrecta</string>
+    <string name="error_field_required">Este campo es requerido</string>
+    <string name="toast_validated"> Validado con exito!</string>
+	
+    <!-- Strings related to markerDetails -->
+    <string name="propmt_links">Links</string>
+    <string name="prompt_attachments">Archivos</string>
+    
+    <!-- Strings related to suggestions -->
+    <string name="suggestion_sent">Tu sugerencia ha sido enviada</string>
+    <string name="suggestion_no_response">Aún no hemos respondido tu sugerencia.</string>
+    
     <color name="contents_text">#ff000000</color>
     <color name="encode_view">#ffffffff</color>
     <color name="help_button_view">#ffcccccc</color>
@@ -46,5 +79,7 @@
     <color name="fblue">#3b5998</color>
     <color name="light_blue">#39B7CD</color>
     <color name="white">#FFFFFF</color>
+	<color name="lt_grey">#B8B8B8</color>
+	<color name="red">#d34836</color>
 
 </resources>

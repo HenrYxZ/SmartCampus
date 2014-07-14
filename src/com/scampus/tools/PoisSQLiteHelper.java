@@ -23,7 +23,12 @@ public class PoisSQLiteHelper extends SQLiteOpenHelper {
 	private static final String COLUMN_NAME_TYPE = "name_type";
 	private static final String COLUMN_CENTERX = "centerx";
 	private static final String COLUMN_CENTERY = "centery";
-
+	private static final String COLUMN_URL = "url";
+	private static final String COLUMN_SOURCE = "source";
+	private static final String COLUMN_PLACE_ID = "place_id";
+	private static final String COLUMN_PLACE_TYPE = "place_type";
+	private static final String COLUMN_START_DATE = "start_date";
+	private static final String COLUMN_END_DATE = "end_date";
 
 
 	//Sentencia SQL para crear la tabla de Pois
@@ -60,10 +65,11 @@ public class PoisSQLiteHelper extends SQLiteOpenHelper {
 			COLUMN_ID+" integer primary key autoincrement," +
 			COLUMN_NAME+" text, " +
 			COLUMN_DESC+" text, " +
-			COLUMN_TYPE+" text, " +
 			COLUMN_CAMPUS+" text, " +
 			COLUMN_LAT+" DOUBLE, " +
-			COLUMN_LNG+" DOUBLE)";
+			COLUMN_LNG+" DOUBLE, " +
+			COLUMN_START_DATE+" text, "+
+			COLUMN_END_DATE+" text)";
 
 	String sqlCreate5 = "CREATE TABLE Categories (" +
 			COLUMN_ID_POI+" integer," +
@@ -78,12 +84,21 @@ public class PoisSQLiteHelper extends SQLiteOpenHelper {
 			COLUMN_ID_POR+" integer," +
 			COLUMN_NAME_TYPE+" text)";
 	
+	String sqlCreate8 = "CREATE TABLE ExternalLinks (" +
+			COLUMN_ID + " integer primary key autoincrement, " +
+			COLUMN_NAME + " text, " +
+			COLUMN_URL +  " text, " +
+			COLUMN_TYPE + " text, " +
+			COLUMN_PLACE_ID + " integer, " +
+			COLUMN_PLACE_TYPE + " text)";
 	
-	
-
-
-
-
+	String sqlCreate9 = "CREATE TABLE LocalLinks (" +
+			COLUMN_ID + " integer primary key autoincrement, " +
+			COLUMN_NAME + " text, " +
+			COLUMN_URL +  " text, " +
+			COLUMN_TYPE + " text, " +
+			COLUMN_PLACE_ID + " integer, " +
+			COLUMN_PLACE_TYPE + " text)";
 
 	public PoisSQLiteHelper(Context contexto, String nombre,
 			CursorFactory factory, int version) {
@@ -101,6 +116,8 @@ public class PoisSQLiteHelper extends SQLiteOpenHelper {
 		db.execSQL(sqlCreate5);
 		db.execSQL(sqlCreate6);
 		db.execSQL(sqlCreate7);
+		db.execSQL(sqlCreate8);
+		db.execSQL(sqlCreate9);
 	}
 
 	@Override
@@ -118,7 +135,9 @@ public class PoisSQLiteHelper extends SQLiteOpenHelper {
 		db.execSQL("DROP TABLE IF EXISTS Categories");
 		db.execSQL("DROP TABLE IF EXISTS Claim_types");
 		db.execSQL("DROP TABLE IF EXISTS Dump_types");
-
+		db.execSQL("DROP TABLE IF EXISTS ExternalLinks");
+		db.execSQL("DROP TABLE IF EXISTS LocalLinks");
+		
 		//Se crea la nueva versión de la tabla
 		db.execSQL(sqlCreate1);
 		db.execSQL(sqlCreate2);
@@ -127,6 +146,8 @@ public class PoisSQLiteHelper extends SQLiteOpenHelper {
 		db.execSQL(sqlCreate5);
 		db.execSQL(sqlCreate6);
 		db.execSQL(sqlCreate7);
+		db.execSQL(sqlCreate8);
+		db.execSQL(sqlCreate9);
 	}
 
 }

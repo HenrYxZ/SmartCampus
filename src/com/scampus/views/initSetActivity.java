@@ -18,7 +18,7 @@ import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
-import com.scampus.especial1.R;
+import com.scampus.uc.R;
 import com.scampus.tools.Campus;
 import com.scampus.tools.DBHelper;
 import com.scampus.tools.RequestHandler;
@@ -94,7 +94,7 @@ public class initSetActivity extends Activity{
 		RadioButton radioButton = (RadioButton)radioGroup.findViewById(radioButtonID);
 		if(radioButtonID == -1){
 			//si no hay ninguna seleccionada se muestra un mensaje
-			sendToastMessage("Debes seleccionar tu universidad");
+			sendToastMessage("Debes seleccionar una opción");
 		}
 		else if(!current_user.hasUniversity()){
 			//si no tiene Universidad
@@ -103,6 +103,7 @@ public class initSetActivity extends Activity{
 			current_user.setUniversity(u);
 			current_user.saveUser(this);
 			Log.i("INIT","agregando al usuario la U"+current_user.getUniversity().toString());
+			radioGroup.check(-1);
 			this.setViewForCampusSelection(u);			
 		}
 		else if(!current_user.hasCampus()){
@@ -111,6 +112,7 @@ public class initSetActivity extends Activity{
 			Campus c = this.findCampusByName(campusName);
 			current_user.setCampus(c);
 			current_user.saveUser(this);
+			requestHandler.editCampus(current_user, context, null);
 			this.sendToMain();
 		}
 

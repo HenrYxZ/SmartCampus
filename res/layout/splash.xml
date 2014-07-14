@@ -7,7 +7,7 @@
 
     <ImageView
         android:id="@+id/imageView1"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/inicio" />
 
@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
       
         android:gravity="center_horizontal"
-        android:orientation="horizontal" >
+        android:orientation="vertical" >
 
         <com.facebook.widget.LoginButton
             android:id="@+id/login_button"
@@ -24,6 +24,10 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="30dp"
             android:layout_marginTop="10dp" />
+        <com.google.android.gms.common.SignInButton
+		    android:id="@+id/sign_in_button"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content" />
     </LinearLayout>
 
     

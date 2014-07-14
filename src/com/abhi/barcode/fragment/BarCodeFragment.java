@@ -57,7 +57,7 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
 import com.google.zxing.ResultPoint;
 import com.google.zxing.client.android.camera.CameraManager;
-import com.scampus.especial1.R;
+import com.scampus.uc.R;
 import com.scampus.tools.User;
 import com.scampus.views.recycleActivity;
 
@@ -257,11 +257,11 @@ private void sendQR(User current_user,final Context context, String element_id, 
 		String url ="";
 		if(type.equalsIgnoreCase("r")){
 			///api/recycle/:dump_id/:api_token"
-			url = "http://smartcampus.ing.puc.cl/api/recycle/";						
+			url = context.getString(R.string.web_server_url)+"/api/recycle/";						
 		}
 		else if(type.equalsIgnoreCase("e")){
 			//api/check_in/:event_id/:api_token
-			url = "http://smartcampus.ing.puc.cl/api/check_in/";
+			url = context.getString(R.string.web_server_url)+"/api/check_in/";
 		}
 		url = url+element_id+"/"+current_user.getApiToken();
 		Log.i(QR_TAG,"request a "+url);

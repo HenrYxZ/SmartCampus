@@ -10,7 +10,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Titulo"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:gravity="center" 
+        android:layout_marginTop="7dp"
+        android:layout_marginBottom="7dp"/>
 
     <ImageView
         android:id="@+id/bigImage"
@@ -22,9 +25,26 @@
     <Button
         android:id="@+id/showMap"
         style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Ver en el mapa" />
+        android:background="@color/light_blue"
+        android:text="Ver detalles del evento"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="7dp"
+        android:layout_marginBottom="7dp"/>
+    
+    <Button
+        android:id="@+id/go_to_publicity_link"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/light_blue"
+        android:text="Ver en la web" 
+        android:layout_marginLeft="7dp"
+        android:layout_marginRight="7dp"
+        android:layout_marginTop="7dp"
+        android:layout_marginBottom="7dp"/>
 
     <EditText
         android:id="@+id/shareText"
@@ -32,21 +52,33 @@
         android:layout_height="wrap_content"
         android:layout_weight="0.21"
         android:ems="10"
-        android:hint="Agrega un comentario y comparte esta noticia con tus amigos de Facebook"
         android:inputType="textMultiLine" >
 
         <requestFocus />
     </EditText>
 
     <Button
-        android:id="@+id/shareButton"
+        android:id="@+id/shareButton_facebook"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:background="@color/fblue"
         android:gravity="center"
-        android:text="@string/share"
+        android:text="@string/fb_share"
         android:textColor="@android:color/white"
-        android:textStyle="bold" />
+        android:textStyle="bold" 
+        android:visibility="gone"/>
+    
+    <Button
+        android:id="@+id/shareButton_google"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:background="@color/red"
+        android:gravity="center"
+        android:text="@string/google_share"
+        android:textColor="@android:color/white"
+        android:textStyle="bold" 
+        android:visibility="gone"/>
 
 </LinearLayout>

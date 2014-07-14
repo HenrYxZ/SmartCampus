@@ -12,7 +12,7 @@ import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-import com.scampus.especial1.R;
+import com.scampus.uc.R;
 
 public class initialDialog {
 

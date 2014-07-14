@@ -1,9 +1,11 @@
 package com.scampus.views;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -13,11 +15,15 @@ import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -28,9 +34,10 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -47,11 +54,14 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
-import com.scampus.especial1.R;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.ResponseHandlerInterface;
+import com.scampus.uc.R;
 import com.scampus.tools.PoisSQLiteHelper;
 import com.scampus.tools.User;
-import com.scampus.tools.MenuHelper;
+import com.scampus.tools.dontShowAgain;
 
 
 public class claimsActivity extends Activity implements OnItemSelectedListener {
@@ -78,6 +88,10 @@ public class claimsActivity extends Activity implements OnItemSelectedListener {
 	public static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 200;
 	public static final int RESULT_LOAD_IMAGE= 300;
 	private GoogleMap map;
+	
+	
+	private AsyncHttpClient asyncClient;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -87,9 +101,13 @@ public class claimsActivity extends Activity implements OnItemSelectedListener {
 
 		context=this;
 		setUpMapIfNeeded();
-
+		new dontShowAgain().dialog(this, "Usa el buscador para encontrar la ubicación de salas, puntos de " +
+				"reciclaje, baños u otros puntos de interés. También puedes filtrarlos por categorías.");
 		current_user = new User(this);
 		claim = (EditText )findViewById(R.id.claims_text);
+		claim.setHint("Escribe aquí tu denuncia, esta será enviada a "+current_user.getUniversity().getName());
+		
+		this.asyncClient = new AsyncHttpClient();
 
 		sendButton = (Button) findViewById(R.id.sendClaimButton);
 		sendButton.setOnClickListener(new View.OnClickListener() {	  	 
@@ -113,15 +131,24 @@ public class claimsActivity extends Activity implements OnItemSelectedListener {
 
 					} while(c.moveToNext());
 				}
-				Log.e("IDDEL TIPO",String.valueOf(type_id));
+	
+				uploadImage();
+				
+				LayoutInflater inflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+				View content = inflater.inflate(R.layout.dialog_claim, null );
+				new AlertDialog.Builder(context) 
+				.setTitle("Denuncia")
+				.setView(content)
+				.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						Intent resultIntent = new Intent();
+						((Activity) context).setResult(Activity.RESULT_OK, resultIntent);
+						((Activity) context).finish();
 
+					}
+				})
+				.show();
 
-
-				new uploadImage().execute();
-				String waitMessage = "Denuncia enviada.";
-				Toast.makeText(getApplicationContext(), 
-						waitMessage,
-						Toast.LENGTH_LONG).show();	            
 			}
 		});
 
@@ -161,7 +188,7 @@ public class claimsActivity extends Activity implements OnItemSelectedListener {
 
 		}
 	}
-	
+
 
 	private void setUpMapIfNeeded() {
 		if(map ==null){
@@ -239,11 +266,11 @@ public class claimsActivity extends Activity implements OnItemSelectedListener {
 		Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);  
 		intent.putExtra(MediaStore.EXTRA_OUTPUT, mCapturedImageURI);  
 		startActivityForResult(intent,CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE );
-//		
-//		Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-//		intent.putExtra(MediaStore.EXTRA_OUTPUT, "video"); 
-//		// start the image capture Intent
-//		this.startActivityForResult(intent,CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE );
+		//		
+		//		Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+		//		intent.putExtra(MediaStore.EXTRA_OUTPUT, "video"); 
+		//		// start the image capture Intent
+		//		this.startActivityForResult(intent,CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE );
 	}
 
 	@Override
@@ -301,55 +328,7 @@ public class claimsActivity extends Activity implements OnItemSelectedListener {
 			}
 		}
 	}
-	public class uploadImage extends AsyncTask<Object, Void, HttpEntity>{
-
-		@Override
-		protected HttpEntity doInBackground(Object... params){
-
-			DefaultHttpClient client = new DefaultHttpClient();
-			Log.i("bla", current_user.getApiToken());
-			String url= "http://smartcampus.ing.puc.cl/api/make_complaint/"+current_user.getApiToken();
-			Log.i("bla", "image_url: "+url);
-			HttpPost post = new HttpPost(url);
-			MultipartEntity imageMPentity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
-
-			try{                
-
-				imageMPentity.addPart("campus_id", new StringBody("1"));
-				imageMPentity.addPart("complaint[complaint_type_id]", new StringBody(String.valueOf(type_id)));
-				imageMPentity.addPart("complaint[latitude]", new StringBody(lat));
-				imageMPentity.addPart("complaint[longitude]", new StringBody(lng));
-				imageMPentity.addPart("complaint[description]", new StringBody(description));
-				if(filepath!=null)
-					imageMPentity.addPart("complaint[photo]", new FileBody(new File(filepath)));    
-
-				post.setEntity(imageMPentity);                
-
-			} catch(Exception e){
-				Log.e("kvx", e.getLocalizedMessage(), e);
-			}
-			HttpResponse response = null;
-
-			try {
-				response = client.execute(post);
-			} catch (ClientProtocolException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			HttpEntity result = response.getEntity();
-			return result;
-		}
-
-		protected void onPostExecute(HttpEntity result){
-			if(result !=null){
-				// add whatever you want it to do next here
-			}
-		}     
-	}
+	
 	@Override
 	public void onItemSelected(AdapterView<?> arg0, View arg1, int pos,
 			long arg3) {
@@ -362,4 +341,94 @@ public class claimsActivity extends Activity implements OnItemSelectedListener {
 		// TODO Auto-generated method stub
 
 	}
+	
+	public void uploadImage() {
+		
+		 if (android.os.Build.VERSION.SDK_INT > 9) {
+		        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+		        StrictMode.setThreadPolicy(policy);
+		    }
+			
+		// Manejo de respuesta de API en JSON
+					ResponseHandlerInterface responseHandler = new JsonHttpResponseHandler() {
+						@Override
+			            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+							
+							Log.i("Response", response.toString());
+							try {
+			                	String status = response.getString("message");
+			                	if (status.equalsIgnoreCase("Error")) {
+			                		
+			                		
+			                		Toast.makeText(context, "Lo lamentamos, no se pudo crear el"+
+			                		"usuario, \n vuelve a intentarlo.", Toast.LENGTH_LONG).show();
+			                	} else {
+			                		
+			                		Toast.makeText(context, "Felicidades, fuiste registrado!",
+			                				Toast.LENGTH_SHORT).show();
+			                	}
+			                } catch (JSONException e){
+			                	e.printStackTrace();
+			                }
+			            }
+
+			            @Override
+			            public void onFailure(int statusCode, Header[] headers, Throwable throwable,
+			            		JSONObject errorResponse) {
+			                Log.e("Register", headers.toString());
+			                Log.e("Register", ""+statusCode);
+			                Log.e("Register", throwable.toString());
+			                if (errorResponse != null) {
+			                    Log.e("Register", errorResponse.toString());
+			                }
+			                //current_user.cleanUser(context);
+			            }
+					};
+
+	
+		Log.i("bla", current_user.getApiToken());
+		String url=  context.getString(R.string.web_server_url)+"/api/make_complaint/"+current_user.getApiToken();
+		Log.i("bla", "image_url: "+url);
+	
+		// Parametros del request
+		RequestParams params = new RequestParams();
+		params.put("campus_id",current_user.getCampus().getID());
+		params.put("complaint[complaint_type_id]",  String.valueOf(type_id));
+		params.put("complaint[latitude]",lat);
+		params.put("complaint[longitude]", lng);
+		params.put("complaint[description]", description);
+		
+		//Log.e("Filepath",filepath);
+		if(filepath!=null)
+		{
+			Log.e("ENTRO aca","qwert");
+			if(filepath.contains(".jpg")||filepath.contains(".png"))
+			{
+				Log.e("ENTRO FOTO","ok");
+				try {
+					params.put("complaint[photo]", new File(filepath), "image/jpg");
+				} catch (FileNotFoundException e){
+					Log.e("Register", e.getMessage());
+				}
+			}
+			if(filepath.contains(".3gp")||filepath.contains(".3gpp")||filepath.contains(".mp4"))
+			{
+				Log.e("ENTRO VIDEO","ok");
+				try {
+					params.put("complaint[video]", new File(filepath), "video/3gp");
+				} catch (FileNotFoundException e){
+					Log.e("Complaint", e.getMessage());
+				}
+			}
+			asyncClient.post(url, params, responseHandler);
+		}
+		else{
+			Toast.makeText(this, "Debes adjuntar una imagen o video", Toast.LENGTH_LONG).show();
+		}
+		//post.setEntity(imageMPentity);     
+		// Se envia el POST!
+		
+
+
+}
 }

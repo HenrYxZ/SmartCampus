@@ -54,9 +54,20 @@
             android1:onClick="onClick_claims"
             android1:text="Denuncia"
             android1:textAppearance="?android:attr/textAppearanceMedium" />
+        
+        <Button
+            android1:id="@+id/textView7"
+            android1:layout_width="match_parent"
+            android1:layout_height="wrap_content"
+            android:background="@drawable/button_menu"
+            android:gravity="left|center_vertical"
+            android:paddingLeft="10dip"
+            android1:onClick="onClick_suggestion"
+            android1:text="Sugerencias"
+            android1:textAppearance="?android:attr/textAppearanceMedium" />
 
         <Button
-            android1:id="@+id/textView1"
+            android1:id="@+id/startView"
             android1:layout_width="match_parent"
             android1:layout_height="wrap_content"
             android1:layout_weight="0.82"
@@ -67,7 +78,7 @@
             android1:textAppearance="?android:attr/textAppearanceMedium" />
 
         <Button
-            android1:id="@+id/textView2"
+            android1:id="@+id/endView"
             android1:layout_width="match_parent"
             android1:layout_height="wrap_content"
             android:background="@drawable/button_menu"

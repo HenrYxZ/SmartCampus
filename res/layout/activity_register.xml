@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/activity_horizontal_margin" >
+	
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        
+        <!--  Register status -->
+    
+	    <LinearLayout
+	        android:id="@+id/register_status"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center"
+	        android:gravity="center_horizontal"
+	        android:orientation="vertical"
+	        android:visibility="gone" >
+	
+	        <ProgressBar
+	            style="?android:attr/progressBarStyleLarge"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_marginBottom="8dp" />
+	
+	        <TextView
+	            android:id="@+id/register_status_message"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_marginBottom="16dp"
+	            android:text="@string/register_progress_registering"
+	            android:textAppearance="?android:attr/textAppearanceMedium" />
+	    </LinearLayout>
+	    
+	    <!-- Register form -->
+	    
+	    <LinearLayout
+	        android:name="formContainer"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical" >
+	
+	        <TextView
+	            android:id="@+id/registerLabel"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:background="@color/light_blue"
+	            android:padding="@dimen/activity_vertical_margin"
+	            android:text="@string/register"
+	            android:textAppearance="?android:attr/textAppearanceLarge"
+	            android:textColor="@color/white"
+	            android:textStyle="bold" />
+	
+	        <EditText
+	            android:id="@+id/email"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:ems="10"
+	            android:hint="@string/prompt_email"
+	            android:inputType="textEmailAddress"
+	            android:padding="@dimen/list_padding" />
+	
+	        <EditText
+	            android:id="@+id/password"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:ems="10"
+	            android:hint="@string/prompt_password"
+	            android:inputType="textPassword"
+	            android:padding="@dimen/list_padding" />
+	
+	        <EditText
+	            android:id="@+id/firstName"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:ems="10"
+	            android:hint="@string/prompt_first_name"
+	            android:inputType="textPersonName"
+	            android:padding="@dimen/list_padding" />
+	
+	        <EditText
+	            android:id="@+id/lastName"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:ems="10"
+	            android:hint="@string/prompt_last_name"
+	            android:inputType="textPersonName"
+	            android:padding="@dimen/list_padding" />
+	
+	        <TextView
+	            android:id="@+id/endView"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:padding="@dimen/list_padding"
+	            android:text="@string/prompt_birthday"
+	            android:textAppearance="?android:attr/textAppearanceMedium" />
+	
+	        <DatePicker
+	            android:id="@+id/datePicker"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content" />
+	
+	        <TextView
+	            android:id="@+id/startView"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:padding="@dimen/list_padding"
+	            android:text="@string/prompt_gender"
+	            android:textAppearance="?android:attr/textAppearanceMedium" />
+	
+	       <RadioGroup
+	           android:id="@+id/radioGroupGender"
+	           android:layout_width="wrap_content"
+	           android:layout_height="wrap_content"
+	           android:orientation="horizontal" >
+	
+	           <RadioButton
+	               android:id="@+id/radioMale"
+	               android:layout_width="wrap_content"
+	               android:layout_height="wrap_content"
+	               android:checked="true"
+	               android:padding="@dimen/list_padding"
+	               android:text="@string/prompt_male" />
+	
+	           <RadioButton
+	               android:id="@+id/radioFemale"
+	               android:layout_width="wrap_content"
+	               android:layout_height="wrap_content"
+	               android:padding="@dimen/list_padding"
+	               android:text="@string/prompt_female" />
+	
+	       </RadioGroup>
+
+	       <LinearLayout
+	           android:layout_width="match_parent"
+	           android:layout_height="wrap_content" >
+
+	           <Button
+	               android:id="@+id/buttonImage"
+	               android:layout_width="wrap_content"
+	               android:layout_height="wrap_content"
+	               android:text="@string/action_image" />
+
+	           <TextView
+	               android:id="@+id/promptImageName"
+	               android:layout_width="wrap_content"
+	               android:layout_height="wrap_content"
+	               android:layout_marginLeft="30dp"
+	               android:text="Picture123.jpg" />
+
+	       </LinearLayout>
+	
+	       <LinearLayout
+	           android:id="@+id/buttonsContainer"
+	           android:layout_width="match_parent"
+	           android:layout_height="wrap_content"
+	           android:orientation="horizontal" >
+	
+	           <Button
+	               android:id="@+id/buttonSend"
+	               android:layout_width="wrap_content"
+	               android:layout_height="wrap_content"
+	               android:layout_marginTop="16dp"
+	               android:background="@color/light_blue"
+	               android:gravity="center_vertical|center_horizontal|right"
+	               android:paddingLeft="32dp"
+	               android:paddingRight="32dp"
+	               android:text="@string/action_send" />
+	
+	           <Button
+	               android:id="@+id/buttonCancel"
+	               android:layout_width="wrap_content"
+	               android:layout_height="wrap_content"
+	               android:layout_marginTop="16dp"
+	               android:gravity="center_vertical|center_horizontal|left"
+	               android:paddingLeft="32dp"
+	               android:paddingRight="32dp"
+	               android:text="@string/action_cancel" />
+	
+	       </LinearLayout>
+	
+	    </LinearLayout>
+        
+    </LinearLayout>
+    
+    
+
+</ScrollView>

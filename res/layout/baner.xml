@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -11,5 +11,18 @@
         android:layout_height="match_parent"
         android:scaleType="fitXY"
         android:src="@drawable/baner1" />
+	<TextView
+	    android:id="@+id/bannerTextTittle"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_marginTop="10dip"
+        android:layout_marginLeft="10dip"
+        android:layout_gravity="left|top"
 
-</LinearLayout>
+        android:padding="12dip"
+        
+        android:background="#AA000000"
+        android:textColor="#ffffffff"
+        
+        android:text="" />
+</FrameLayout>

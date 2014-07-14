@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -30,8 +31,13 @@ import com.facebook.Request;
 import com.facebook.RequestAsyncTask;
 import com.facebook.Response;
 import com.facebook.Session;
-import com.scampus.especial1.DiskBitmapCache;
-import com.scampus.especial1.R;
+import com.google.android.gms.plus.PlusShare;
+import com.scampus.uc.R;
+import com.scampus.tools.User;
+import com.scampus.tools.DBHelper;
+import com.scampus.tools.PlaceDetails;
+import com.scampus.uc.DiskBitmapCache;
+
 
 public class publicityActivity extends Activity{
 	private String src;//la fuente de la imagen a mostrar
@@ -45,7 +51,9 @@ public class publicityActivity extends Activity{
 	private boolean pendingPublishReauthorization = false;
 	private String name;
 	private String type;
+	private String link;
 	EditText comment;
+	private User current_user;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -61,42 +69,102 @@ public class publicityActivity extends Activity{
 		src = b.getString("image_source");
 		name = b.getString("image_name");
 		type = b.getString("image_type");
+		link = b.getString("link");
+		// TODO Poner el link en la img
 		final int event_id = b.getInt("event_id");
+		
+		current_user = new User(this);
 		
 		//si el tipo es EVENT mostramos el boton para ir hacia el mapa
 		Button goToMap = (Button)this.findViewById(R.id.showMap);
-		if(!type.equalsIgnoreCase("event"))
-		goToMap.setVisibility(View.INVISIBLE);
+		Button go_to_publicity_link = (Button)this.findViewById(R.id.go_to_publicity_link);
+		
+		if(!type.equalsIgnoreCase("event")){
+			
+			goToMap.setVisibility(View.INVISIBLE);
+			
+			go_to_publicity_link.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					
+					if (link.isEmpty())
+						return;
+					Intent intent = new Intent();
+			        intent.setAction(Intent.ACTION_VIEW);
+			        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+			        intent.setData(Uri.parse(link));
+			        startActivity(intent);
+					
+				}
+			});
+		}
 		else{
+			
+			go_to_publicity_link.setVisibility(View.INVISIBLE);
+			
 			goToMap.setOnClickListener(new View.OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
 					
-					Intent i = new Intent(publicityActivity.this,mapActivity.class);
-					Bundle b = new Bundle();					
-					b.putInt("event_id", event_id);
-					i.putExtras(b);
-					startActivity(i);	
+					DBHelper dbHelper = new DBHelper(publicityActivity.this);
+					PlaceDetails place = dbHelper.getEventByName(publicityActivity.this,
+							name);
+					Intent intent = new Intent(publicityActivity.this,
+							markerDetailsActivity.class);
+					intent.putExtra("placeTag", place);
+					startActivity(intent);	
 					
 				}
 			});
 		}
 		
 		
-
-		
 		//buscamos la imagen
 		this.image = (ImageView)findViewById(R.id.bigImage);
 		//cargamos la imagen
 	  	imageLoader.get(this.src, ImageLoader.getImageListener(image, R.drawable.transparent, R.drawable.loadingerror));
 	  	//TODO cambiar el logo de error
+	  	this.image.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if (type.equals("event")) {
+					DBHelper dbHelper = new DBHelper(publicityActivity.this);
+					PlaceDetails place = dbHelper.getEventByName(publicityActivity.this,
+							name);
+					Intent intent = new Intent(publicityActivity.this,
+							markerDetailsActivity.class);
+					intent.putExtra("placeTag", place);
+					startActivity(intent);
+				} else {
+					if (link.isEmpty())
+						return;
+					Intent intent = new Intent();
+			        intent.setAction(Intent.ACTION_VIEW);
+			        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+			        intent.setData(Uri.parse(link));
+			        startActivity(intent);
+				}
+			}
+		});
 	  	
 	  	TextView title = (TextView) this.findViewById(R.id.publicityTitle);
 	  	title.setText(name);
 	  	comment = (EditText) this.findViewById(R.id.shareText);
 	  	
-	  	shareButton = (Button) findViewById(R.id.shareButton);
+	  	if(current_user.getProvider().equalsIgnoreCase("google")){
+	  		shareButton = (Button) findViewById(R.id.shareButton_google);
+	  		comment.setHint(R.string.google_share_hint);;
+	  	}
+	  	else {
+	  		shareButton = (Button) findViewById(R.id.shareButton_facebook);
+	  		comment.setHint(R.string.fb_share_hint);
+	    }
+	  	
+	  	shareButton.setVisibility(View.VISIBLE);
+
 	  	shareButton.setOnClickListener(new View.OnClickListener() {
 	  	 
 	  	  ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -104,24 +172,44 @@ public class publicityActivity extends Activity{
 	  	  public void onClick(View v) {
 	  	    	NetworkInfo ni = cm.getActiveNetworkInfo();
 	  	    	if (ni == null) {
-	  	    		String waitMessage = "Debes estar conectado a internet para compartir en Facebook";
+	  	    		String waitMessage = "Debes estar conectado a internet para compartir";
 	  	            Toast.makeText(getApplicationContext(), 
 	  	                 waitMessage,
 	  	                 Toast.LENGTH_LONG).show();	        
 	  	    	}
-	  	    	else 
-	  	        publishStory();        
+	  	    	else if(current_user.getProvider().equalsIgnoreCase("google")){
+	  	    		publishStoryGoogle();  
+	  	    	}
+	  	    	else if(current_user.getProvider().equalsIgnoreCase("native")){
+	  	    		
+	  	    	}
+	  	    	else{
+	  	    		publishStoryFacebook();  
+	  	    	}
 	  	    }
-	  	});
-	  	
-		
-		
-    	
-		
+	  	});	
 	}
 	
 
-	private void publishStory() {
+	protected void publishStoryGoogle() {
+		
+		Intent shareIntent = new PlusShare.Builder(this)
+		//.setContentUrl(Uri.parse(this.getString(R.string.web_server_url)))
+        .setText(this.comment.getText().toString())
+        .setType("image/png")
+        .setContentDeepLinkId("testID",
+                this.name,
+                "Test Description",
+                Uri.parse(this.src))
+        .getIntent();
+		startActivityForResult(shareIntent, 0);
+		
+		this.finish();
+		
+	}
+
+
+	private void publishStoryFacebook() {
 	    Session session = Session.getActiveSession();
 
 	    if (session != null){
@@ -133,9 +221,7 @@ public class publicityActivity extends Activity{
 	            Session.NewPermissionsRequest newPermissionsRequest = new Session
 	                    .NewPermissionsRequest(this, PERMISSIONS);
 	            session.requestNewPublishPermissions(newPermissionsRequest);
-	            return;
-	            
-	            
+	            return; 
 	        }
 	        else {
 
@@ -170,6 +256,7 @@ public class publicityActivity extends Activity{
 	                        Toast.makeText(getApplicationContext(), 
 	                             succesMessage,
 	                             Toast.LENGTH_LONG).show();
+	                        
 	                }
 	            }
 	        };
@@ -182,7 +269,8 @@ public class publicityActivity extends Activity{
 	        String waitMessage = "Publicando en Facebook";
             Toast.makeText(getApplicationContext(), 
                  waitMessage,
-                 Toast.LENGTH_LONG).show();	        
+                 Toast.LENGTH_LONG).show();	    
+            this.finish();
 	    }
 	    }
 
@@ -197,4 +285,12 @@ public class publicityActivity extends Activity{
 	    }
 	    return true;
 	}
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    super.onActivityResult(requestCode, resultCode, data);
+	   Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
+
+	}
+	
 }

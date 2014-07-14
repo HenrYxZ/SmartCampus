@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.scampus.especial1"
+    package="com.scampus.uc"
     android:versionCode="5"
     android:versionName="1.3.2" >
 
     <uses-sdk
-        android:minSdkVersion="5"
+        android:minSdkVersion="7"
         android:targetSdkVersion="17" />
     
     <!-- Agregado por HenrY para tratar de hacer funcionar Google Maps -->
@@ -16,12 +16,13 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- PERMISO PARA GEOFENCES -->
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
-    
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     
     <!--
          The following two permissions are not required to use
@@ -38,12 +39,20 @@
         <activity
             android:name="com.scampus.views.MainActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait" >  
+        </activity>
+        <activity 
+            android:name="com.scampus.views.loginActivity"
+            android:label="@string/app_name"
+            android:windowSoftInputMode="adjustResize|stateVisible">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity 
+            android:name="com.scampus.views.RegisterActivity"
+            android:label="@string/app_name">
         </activity>
         <activity
             android:name="com.scampus.views.recycleActivity"
@@ -72,6 +81,11 @@
             android:name="com.scampus.views.accountActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
+         
+        <activity 
+            android:name="com.scampus.views.markerDetailsActivity"
+            android:label="@string/app_name"
+            />
 
           <activity
             android:name="com.scampus.views.claimsActivity"
@@ -90,6 +104,17 @@
             android:name="com.scampus.views.initSetActivity"
             android:screenOrientation="portrait" >
         </activity>
+         <activity
+            android:name="com.scampus.views.suggestionActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.scampus.views.googleSignInActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity 
+            android:name="com.scampus.views.facebookLoginActivity">
+        </activity>
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
@@ -101,5 +126,6 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+        <activity android:name="com.scampus.views.surveyActivity"></activity>
     </application>
 </manifest>

@@ -2,7 +2,7 @@ package com.scampus.tools;
 
 
 
-import com.scampus.especial1.R;
+import com.scampus.uc.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;

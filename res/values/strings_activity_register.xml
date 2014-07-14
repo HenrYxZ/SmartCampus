@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="register">Registrate!</string>
+    <string name="prompt_first_name">Nombre</string>
+    <string name="prompt_last_name">Apellido</string>
+    <string name="prompt_gender">Genero</string>
+    <string name="prompt_male">Hombre</string>
+    <string name="prompt_female">Mujer</string>
+    <string name="prompt_birthday">Fecha de nacimiento</string>
+    <string name="action_image">Imagen de perfil</string>
+    
+    <string name ="register_progress_registering">Registrando&#8230;</string>
+    
+</resources>

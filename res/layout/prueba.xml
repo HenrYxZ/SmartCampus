@@ -30,7 +30,7 @@
                     android:orientation="vertical" >
 
                     <TextView
-                        android:id="@+id/textView1"
+                        android:id="@+id/startView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Contenido Tab 1" />
@@ -49,7 +49,7 @@
                         android:orientation="vertical" >
 
                         <TextView
-                            android:id="@+id/textView2"
+                            android:id="@+id/endView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Información general"
@@ -61,7 +61,7 @@
                             android:background="@android:color/darker_gray" />
 
                         <TextView
-                            android:id="@+id/textView1"
+                            android:id="@+id/startView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Nombre"

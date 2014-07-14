@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+     <LinearLayout
+	        android:id="@+id/qs"
+	        android:layout_width="fill_parent"
+	        android:layout_height="match_parent"
+	    	android:orientation="vertical" >
+	   <ImageView
+	        android:id="@+id/surveyImage"
+	        android:layout_width="match_parent"
+	        android:layout_height="200dp"
+	        android:scaleType="fitXY"/>"
+       
+	   <Button
+	        android:id="@+id/buttonEnviar"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:background="@color/light_blue"
+	        android:text="Enviar respuestas" 
+	        android:layout_marginLeft="7dp"
+        	android:layout_marginRight="7dp"
+        	android:layout_marginTop="7dp"
+        	android:layout_marginBottom="7dp"/>
+	   
+	    <TextView
+		    android:id="@+id/survey_name"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:textAppearance="?android:attr/textAppearanceLarge" 
+		   	android:gravity="center"/>
+	    
+	    <TextView
+		    android:id="@+id/preguntas"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:text="Preguntas:"
+		    android:textAppearance="?android:attr/textAppearanceSmall"
+		   	android:gravity="center"/>
+	 </LinearLayout>
+
+</ScrollView>

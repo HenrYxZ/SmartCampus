@@ -12,12 +12,21 @@
         android:layout_weight="1" >
 
         <com.facebook.widget.ProfilePictureView
-            android:id="@+id/selection_profile_pic"
+            android:id="@+id/selection_profile_pic_facebook"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1.00"
             android:gravity="center_horizontal"
+            android:visibility="gone"
             facebook:preset_size="small" />
+        
+        <ImageView
+                android:id="@+id/selection_profile_pic_google"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1.00"
+                android:gravity="center_horizontal"
+                android:visibility="gone"/>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -62,7 +71,7 @@
             android:layout_height="match_parent"
             android:layout_weight="0.99"
             android:background="@drawable/button"
-            android:drawableTop="@drawable/explore_72"
+            android:drawableTop="@drawable/explore_ballicon_tittle"
             android:onClick="onClick_map"
             android:paddingBottom="25dp"
             android:paddingTop="30dp" />
@@ -75,7 +84,7 @@
             android:layout_marginRight="1dp"
             android:layout_weight="1.00"
             android:background="@drawable/button"
-            android:drawableTop="@drawable/recycle_722"
+            android:drawableTop="@drawable/checkin_ballicon_tittle"
             android:onClick="onClick_recycle"
             android:paddingBottom="25dp"
             android:paddingTop="30dp" />
@@ -86,13 +95,13 @@
             android:layout_height="match_parent"
             android:layout_weight="1.00"
             android:background="@drawable/button"
-            android:drawableTop="@drawable/claim_722"
+            android:drawableTop="@drawable/claim_ballicon_tittle"
             android:onClick="onClick_claims"
             android:paddingBottom="25dp"
             android:paddingTop="30dp" />
     </RadioGroup>
 
-    <com.scampus.especial1.BannerPager
+    <com.scampus.uc.BannerPager
         android:id="@+id/mainBanner"
         android:layout_width="match_parent"
         android:layout_height="0dp"

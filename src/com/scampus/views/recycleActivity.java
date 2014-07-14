@@ -11,12 +11,14 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.scampus.especial1.R;
+import com.scampus.uc.R;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -24,13 +26,15 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.scampus.especial1.R;
+import com.scampus.uc.R;
+import com.scampus.tools.User;
 import com.facebook.FacebookRequestError;
 import com.facebook.HttpMethod;
 import com.facebook.Request;
 import com.facebook.RequestAsyncTask;
 import com.facebook.Response;
 import com.facebook.Session;
+import com.google.android.gms.plus.PlusShare;
 
 
 
@@ -41,6 +45,7 @@ public class recycleActivity extends Activity {
 	private static final List<String> PERMISSIONS = Arrays.asList("publish_actions");
 	private static final String PENDING_PUBLISH_KEY = "pendingPublishReauthorization";
 	private boolean pendingPublishReauthorization = false;
+	private User current_user;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +63,16 @@ public class recycleActivity extends Activity {
 		TextView a =(TextView)findViewById(R.id.recycleText);
 		a.setText(value);
 		
-		shareButton = (Button) findViewById(R.id.shareQRButton);
+		current_user = new User(this);
+		
+		if(current_user.getProvider().equalsIgnoreCase("google")){
+	  		shareButton = (Button) findViewById(R.id.googleshareQRButton);
+	  	}
+	  	else {
+	  		shareButton = (Button) findViewById(R.id.fbshareQRButton);
+	    }
+		shareButton.setVisibility(View.VISIBLE);
+		
 	  	shareButton.setOnClickListener(new View.OnClickListener() {
 	  	 
 	  	  ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -71,14 +85,39 @@ public class recycleActivity extends Activity {
 	  	                 waitMessage,
 	  	                 Toast.LENGTH_LONG).show();	        
 	  	    	}
-	  	    	else 
-	  	        publishStory();        
+	  	    	else if(current_user.getProvider().equalsIgnoreCase("google")){
+	  	    		publishStoryGoogle();  
+	  	    	}
+	  	    	else if(current_user.getProvider().equalsIgnoreCase("native")){
+	  	    		
+	  	    	}
+	  	    	else{
+	  	    		publishStoryFacebook();  
+	  	    	}       
 	  	    }
 	  	});
 		
 	}
 	
-	private void publishStory() {
+	protected void publishStoryGoogle() {
+		
+		
+		Intent shareIntent = new PlusShare.Builder(this)
+		.setContentUrl(Uri.parse(this.getString(R.string.web_server_url)))
+        .setText(this.title)
+        .setType("image/png")
+        .setContentDeepLinkId("testID",
+                this.title,
+                "Ven a compartir y disfrutar de la sustentabilidad en la uc",
+                Uri.parse("http://smartcampus-user.herokuapp.com/"))
+        .getIntent();
+		startActivityForResult(shareIntent, 0);
+		
+		this.finish();
+		
+	}
+
+	private void publishStoryFacebook() {
 	    Session session = Session.getActiveSession();
 
 	    if (session != null){
@@ -98,7 +137,7 @@ public class recycleActivity extends Activity {
 	        postParams.putString("name", title);
 	        postParams.putString("caption", "");
 	        postParams.putString("description", "Ven a compartir y disfrutar de la sustentabilidad en la uc");
-	        postParams.putString("link", "http://smartcampus.ing.puc.cl");
+	        postParams.putString("link", "http://smartcampus-user.herokuapp.com/");
 
 	        Request.Callback callback= new Request.Callback() {
 	            public void onCompleted(Response response) {
@@ -137,7 +176,7 @@ public class recycleActivity extends Activity {
                  Toast.LENGTH_LONG).show();	        
 	    }
 	    
-	    
+	    this.finish();
 
 	}
 	private boolean isSubsetOf(Collection<String> subset, Collection<String> superset) {

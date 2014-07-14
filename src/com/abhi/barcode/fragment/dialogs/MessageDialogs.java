@@ -29,6 +29,10 @@ public class MessageDialogs extends DialogFragment {
 		mWhat = what;
 	}
 	
+	public MessageDialogs() {
+	
+	}
+	
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return mCreator.createDialog(mWhat);

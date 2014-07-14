@@ -11,7 +11,8 @@ public class BannerSQLiteHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_WEB_ID = "web_id";
 	public static final String COLUMN_NAME = "name";
 	public static final String COLUMN_URL = "url";
-	public static final String COLUMN_ACTIVE = "active";
+	public static final String COLUMN_STATUS = "status";
+	public static final String COLUMN_LINK = "link";
 	public static final String COLUMN_TYPE = "type";
 
 	
@@ -21,10 +22,11 @@ public class BannerSQLiteHelper extends SQLiteOpenHelper {
     //Sentencia SQL para crear la tabla de Pois
 	String sqlCreate = "CREATE TABLE banner_elements (" +
     		COLUMN_ID+" integer primary key," +
-    		COLUMN_WEB_ID+" integer UNIQUE," +
+    		COLUMN_WEB_ID+" integer," +
 			COLUMN_NAME+" text,"+
 			COLUMN_URL+" text,"+
-			COLUMN_ACTIVE+" integer,"+
+			COLUMN_STATUS+" integer,"+
+			COLUMN_LINK+" link,"+
     		COLUMN_TYPE+" text)";
 	
    
@@ -55,6 +57,11 @@ public class BannerSQLiteHelper extends SQLiteOpenHelper {
  
         //Se crea la nueva versión de la tabla
         db.execSQL(sqlCreate);
+    }
+    
+    public void Update(SQLiteDatabase db){
+    	 db.execSQL("DROP TABLE IF EXISTS banner_elements");
+    	 db.execSQL(sqlCreate);
     }
     
   

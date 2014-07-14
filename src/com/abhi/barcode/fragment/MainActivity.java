@@ -19,7 +19,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Window;
 
-import com.scampus.especial1.R;
+import com.scampus.uc.R;
 import com.scampus.tools.dontShowAgain;
 
 

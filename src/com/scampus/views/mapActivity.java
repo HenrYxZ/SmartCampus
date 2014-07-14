@@ -3,6 +3,8 @@
 
 package com.scampus.views;
 
+import java.util.List;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -33,19 +35,21 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
-import com.scampus.especial1.R;
-import com.scampus.especial1.SConstants;
+import com.scampus.uc.R;
 import com.scampus.tools.Building;
 import com.scampus.tools.Campus;
 import com.scampus.tools.DBHelper;
 import com.scampus.tools.Map;
+import com.scampus.tools.PlaceDetails;
 import com.scampus.tools.PoisSQLiteHelper;
 import com.scampus.tools.User;
 import com.scampus.tools.dontShowAgain;
 import com.scampus.tools.MenuHelper;
+import com.scampus.uc.SConstants;
 //TODAVIA NO CIERRO LA BD
 public class mapActivity extends Activity implements SConstants, OnCheckedChangeListener  {
 	SlidingMenu menu;
@@ -56,9 +60,10 @@ public class mapActivity extends Activity implements SConstants, OnCheckedChange
 	PoisSQLiteHelper sesdbh;
 	SQLiteDatabase db;
 	ProgressDialog pd;
+	PlaceDetails current_place_clicked;
 	private User current_user;
 	private RequestQueue requestQueue; //volley para mandar requests al servidor
-	boolean b_visible= false;
+	boolean b_visible= true;
 	Map mapHelper;
 	
 	final int RQS_GooglePlayServices = 1;
@@ -82,9 +87,9 @@ public class mapActivity extends Activity implements SConstants, OnCheckedChange
 		current_user = new User(this);
 		int campus_id = current_user.getCampus().getID();
 		DBHelper dbh = new DBHelper(this);
-		Campus[] campus = dbh.getCampus(campus_id);
+		Campus campus = dbh.getCampusById(campus_id);
 		PolygonOptions options = new PolygonOptions();
-		options.addAll(new Map().decodePoly(campus[0].getPolygon()));
+		options.addAll(new Map().decodePoly(campus.getPolygon()));
 		options.strokeWidth(4);
 		options.visible(true);
 		Bundle b = getIntent().getExtras();
@@ -98,7 +103,11 @@ public class mapActivity extends Activity implements SConstants, OnCheckedChange
 
 		}
 		map.addPolygon(options);
-
+		
+		//Posiciona correctamente el mapa.
+		List<LatLng> puntoPoligono = new Map().decodePoly(campus.getPolygon());
+		setUpMap(puntoPoligono);
+		
 		//Crea la base de datos DBPois version 1 (si se cambia la version hay que implementar el onUpdate del PoisSQLiiteHelper)
 		sesdbh = new PoisSQLiteHelper(this, "DBPois", null,1);
 		//Abre la base de datos
@@ -127,7 +136,29 @@ public class mapActivity extends Activity implements SConstants, OnCheckedChange
 		new dontShowAgain().dialog(mapActivity.this, "Usa el buscador para encontrar la ubicación de salas, puntos de " +
 				"reciclaje, baños u otros puntos de interés. También puedes filtrarlos por categorías.");
 
-
+		// Definir la nueva forma de escuchar los clicks a marcadores para mostrar detalles
+		GoogleMap.OnMarkerClickListener newMarkerListener = new GoogleMap.OnMarkerClickListener() {
+			
+			@Override
+			public boolean onMarkerClick(Marker marker) {
+				Log.i("Marker", "Click!");
+				return false;
+			}
+		};
+		GoogleMap.OnInfoWindowClickListener newInfoWindowListener = new GoogleMap.OnInfoWindowClickListener() {
+			
+			@Override
+			public void onInfoWindowClick(Marker marker) {
+				Log.i("InfoWindow", "Click info!");
+				// Si clickean el info view muestro la actividad de detalles
+				PlaceDetails place = mapHelper.getMarkerToPlace().get(marker);
+				Intent detailsIntent = new Intent(mapActivity.this, markerDetailsActivity.class);
+				detailsIntent.putExtra("placeTag", place);
+				startActivity(detailsIntent);
+			}
+		};
+		map.setOnMarkerClickListener(newMarkerListener);
+		map.setOnInfoWindowClickListener(newInfoWindowListener);
 
 	}
 
@@ -170,8 +201,8 @@ public class mapActivity extends Activity implements SConstants, OnCheckedChange
 			menu.toggle();
 			break;
 		case R.id.buildings:
-			mapHelper.setVisible(b_visible);
 			b_visible=!b_visible;
+			mapHelper.setVisible(b_visible);
 			break;
 
 
@@ -195,6 +226,7 @@ public class mapActivity extends Activity implements SConstants, OnCheckedChange
 	protected void onNewIntent(Intent intent) {
 		handleIntent(intent);
 	}
+	
 	//maneja el los intents
 	private void handleIntent(Intent intent) {
 		//si es que el intent viene de la busqueda
@@ -258,11 +290,6 @@ public class mapActivity extends Activity implements SConstants, OnCheckedChange
 				} while(c.moveToNext());
 			}
 
-
-
-
-
-
 		}
 	}
 
@@ -274,13 +301,13 @@ public class mapActivity extends Activity implements SConstants, OnCheckedChange
 			//Intenta obtener el mapa desde la API de google
 			map = ((MapFragment)getFragmentManager().findFragmentById(R.id.map)).getMap();
 			//Si es que lo logra lo configura dependiendo de como queramos
-			if(map != null){
-				setUpMap();
-			}
+			//if(map != null){
+				//setUpMap();
+			//}
 		}
 
 	}
-	private void setUpMap() {
+	private void setUpMap(List<LatLng> puntoPoligono) {
 		map.setMyLocationEnabled(true);		//Encuentra la ubicación actual del celular (No es muy preciso)
 
 		//		LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -291,15 +318,14 @@ public class mapActivity extends Activity implements SConstants, OnCheckedChange
 		//		Location latLongaux = locationManager.getLastKnownLocation(provider);
 		//		myLocation=new LatLng(latLongaux.getLatitude(), latLongaux.getLongitude());
 
-		LatLng position = new LatLng(-33.49965, -70.61250);
-
+		//LatLng position = new LatLng(-33.49965, -70.61250);
+		LatLng position = puntoPoligono.get(0);
+				
 		map.moveCamera(CameraUpdateFactory.newLatLng(position));
 		map.animateCamera(CameraUpdateFactory.zoomTo(15));
 
 	}
-
-
-
+	
 	//ESTE METODO SE PUEDE OPTIMIZAR MUCHISIMO
 	@Override
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

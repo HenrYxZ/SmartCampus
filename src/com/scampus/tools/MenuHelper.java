@@ -19,7 +19,7 @@ import android.widget.TextView;
 import com.facebook.Session;
 import com.google.android.gms.maps.GoogleMap;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
-import com.scampus.especial1.R;
+import com.scampus.uc.R;
 
 public class MenuHelper {
 	PoisSQLiteHelper sesdbh;

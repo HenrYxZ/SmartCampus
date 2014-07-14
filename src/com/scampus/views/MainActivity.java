@@ -12,6 +12,7 @@ import java.util.TimerTask;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -48,21 +49,20 @@ import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
-import com.scampus.especial1.BannerPager;
-import com.scampus.especial1.R;
+import com.scampus.uc.R;
 import com.scampus.tools.Map;
 import com.scampus.tools.PoisSQLiteHelper;
 import com.scampus.tools.RequestHandler;
 import com.scampus.tools.User;
 import com.scampus.tools.MenuHelper;
+import com.scampus.uc.BannerPager;
 
 
 public class MainActivity extends FragmentActivity {
 
-	private static final int SPLASH = 0;
-	private static final int SELECTION = 1;
+	private static final int SELECTION = 0;
 	//Esta constante se agrega para el fragmento de Settings
-	private static final int SETTINGS = 2;
+	private static final int SETTINGS = 1;
 	//
 	private static final int FRAGMENT_COUNT = SETTINGS +1;
 	//Arreglo de fragmentos
@@ -98,6 +98,7 @@ public class MainActivity extends FragmentActivity {
 		//para manejar los tres fragmentos se usa FragmentManager
 
 		current_user = new User(this);
+		
 		requestQueue = Volley.newRequestQueue(this);
 		requestQueue.cancelAll("VOLLEY");
 
@@ -105,7 +106,6 @@ public class MainActivity extends FragmentActivity {
 
 
 		FragmentManager fm = getSupportFragmentManager();
-		fragments[SPLASH] = fm.findFragmentById(R.id.splashFragment);
 		fragments[SELECTION] = fm.findFragmentById(R.id.selectionFragment);
 		fragments[SETTINGS] = fm.findFragmentById(R.id.userSettingsFragment);
 
@@ -124,7 +124,9 @@ public class MainActivity extends FragmentActivity {
 			banner.onCreate();
 		}
 
-		this.setBannerListenner();
+		this.setBannerListenner();	
+		
+		
 
 	}
 
@@ -145,38 +147,6 @@ public class MainActivity extends FragmentActivity {
 
 		}
 	}
-
-
-	private void requestPublishPermissions() {
-		Session session = Session.getActiveSession();
-		if (session != null && !asked_once){
-
-			// Check for publish permissions    
-			List<String> permissions = session.getPermissions();
-			if (!isSubsetOf(PERMISSIONS, permissions)) {
-				Session.NewPermissionsRequest newPermissionsRequest = new Session
-						.NewPermissionsRequest(this, PERMISSIONS);
-				session.requestNewPublishPermissions(newPermissionsRequest);
-
-			}
-			asked_once = true;
-		}
-	}
-
-
-	private void goToInitialSetting() {
-		current_user.retrieveUser(this);
-		if((current_user.hasApiToken(this) && !current_user.hasUniversity()) ||  (current_user.hasApiToken(this) && !current_user.hasCampus())){
-
-			Intent i = new Intent(this, initSetActivity.class);
-			startActivity(i);
-			//finish();
-		}
-
-
-
-	}
-
 
 	public void setBannerListenner() {
 
@@ -204,22 +174,45 @@ public class MainActivity extends FragmentActivity {
 
 					@Override
 					public void onClick(View v) {
-						//creamos el intent para enviar a la vista de publicidad
-						Intent i = new Intent(MainActivity.this,publicityActivity.class);
-						Bundle b = new Bundle();
 						int pos = banner.getCurrentItem();
 						String type = banner.getElements()[pos].getType().toString();
-						b.putString("image_source", banner.getElements()[pos].getUrl()); //pasamos parametros para la nueva actividad
-						b.putString("image_type", type); //pasamos el tipo TODO:agarrar el tipo en
-						b.putString("image_name", banner.getElements()[pos].getName());
-						if(type.equalsIgnoreCase("event")){
-							int o = banner.getElements()[pos].getID();
-							b.putInt("event_id",o);
+						
+						if (type == "survey") 
+						{
+							//lanzar ventana de encuesta
+							Intent i = new Intent(MainActivity.this, surveyActivity.class);
+							Bundle b = new Bundle();
+							int surveyID = banner.getElements()[pos].getID();
+							b.putInt("survey_ID", surveyID);
+							b.putString("API_token", current_user.getApiToken());
+							
+							b.putString("image_source", banner.getElements()[pos].getUrl(getApplicationContext())); //pasamos parametros para la nueva actividad
+							b.putString("image_type", type); //pasamos el tipo TODO:agarrar el tipo en
+							b.putString("image_name", banner.getElements()[pos].getName());
+							
+							i.putExtras(b);
+							startActivity(i);
 						}
-						else
-							b.putInt("event_id", -1);
-						i.putExtras(b);
-						startActivity(i);							
+						
+						else {
+							//creamos el intent para enviar a la vista de publicidad
+							Intent i = new Intent(MainActivity.this,publicityActivity.class);
+							Bundle b = new Bundle();
+							
+							b.putString("image_source", banner.getElements()[pos].getUrl(getApplicationContext())); //pasamos parametros para la nueva actividad
+							b.putString("image_type", type); //pasamos el tipo TODO:agarrar el tipo en
+							b.putString("image_name", banner.getElements()[pos].getName());
+							b.putString("link", banner.getElements()[pos].link);
+							if(type.equalsIgnoreCase("event")){
+								int o = banner.getElements()[pos].getID();
+								b.putInt("event_id",o);
+							}
+							else
+								b.putInt("event_id", -1);
+							i.putExtras(b);
+							startActivity(i);
+							
+						}													
 					}
 				});
 
@@ -268,19 +261,38 @@ public class MainActivity extends FragmentActivity {
 		}	
 
 		if(item.equals(logout)){
-			//Buscamos la session del usuario actual.
-			Session session = Session.getActiveSession();
-			//agregamos este log para probar que pasa con las token y como se comportan
-			Log.i("SESSION", session.getAccessToken());
-			//Serramos la sesion del usuario
-			session.closeAndClearTokenInformation();
-			current_user.cleanUniversity(this);
-			current_user = new User(this);
-
-			return true;
+			
+			if(current_user.getProvider().equals("google") ){
+				Intent i = new Intent(this, googleSignInActivity.class);
+				Bundle b = new Bundle();					
+				b.putBoolean("logout", true);
+				i.putExtras(b);
+				startActivity(i);	
+				this.finish();
+			}
+			else if(current_user.getProvider().equals("native")){
+				current_user.cleanUser(this);
+				startActivity(new Intent(this, loginActivity.class));
+				finish();
+				return true;
+			}
+			else{
+				//es facebook
+				//Buscamos la session del usuario actual.
+				Session session = Session.getActiveSession();
+				//agregamos este log para probar que pasa con las token y como se comportan
+				Log.i("SESSION", session.getAccessToken());
+				//Serramos la sesion del usuario
+				session.closeAndClearTokenInformation();
+				current_user.cleanUser(this);
+				current_user = new User(this);
+				return true;
+			}
 		}
 		else
 			return super.onOptionsItemSelected(item);
+		
+		return false;
 	}
 
 	@Override
@@ -325,38 +337,60 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onResumeFragments() {
 		super.onResumeFragments();
-		Session session = Session.getActiveSession();
-
-
-		if (session != null && session.isOpened()) {
-			// Si la sesion esta abierta,
-			// tratamos de abrir selection fragment: Este fragment es donde se muestra el menu de la apliacion y el banner
-			showFragment(SELECTION, false);
-			smenu= (SlidingMenu) new MenuHelper().create(this, 1,null);
-
-
-
-		} else {
-			// otherwise present the splash screen
-			// and ask the person to login.
-			showFragment(SPLASH, false);
-
-		}
+		
+		showFragment(SELECTION, false);
+		smenu= (SlidingMenu) new MenuHelper().create(this, 1,null);
 	}
+	
+	//este metodo se llama cuando hay algun cambio en la sesion de facebook para manejar los problemas
+	private void onSessionStateChange(Session session, SessionState state, Exception exception) {
+
+		if (state.isClosed()) {
+		// Si la sesion esta cerrada:
+		// Mostramos el fragment para iniciar sesion con facebook (SPLASH fragment)
+			Log.i("SESSION", "Logged out...");
+			startActivity(new Intent(this, loginActivity.class));
+			finish();
+		}
+
+	}
+	
+	private Session.StatusCallback callback = new Session.StatusCallback() {
+		@Override
+		public void call(Session session, SessionState state, Exception exception) {
+			onSessionStateChange(session, state, exception);
+		}
+	};
+	
 	public void onClick_logout(View v)
 	{
 		smenu.toggle();
-		current_user.cleanUniversity(this);
 		this.getActionBar().setDisplayHomeAsUpEnabled(false);
-		Log.i("SESSION", "Se disparo el evento onOptionsItemSelected...");
-		//Buscamos la session del usuario actual.
-		Session session = Session.getActiveSession();
-		//agregamos este log para probar que pasa con las token y como se comportan
-		Log.i("SESSION", session.getAccessToken());
-		//Serramos la sesion del usuario
-		session.closeAndClearTokenInformation();
-
-
+		
+		if(current_user.getProvider().equals("google") ){
+			Intent i = new Intent(this, googleSignInActivity.class);
+			Bundle b = new Bundle();					
+			b.putBoolean("logout", true);
+			i.putExtras(b);
+			startActivity(i);	
+			this.finish();
+		}
+		else if(current_user.getProvider().equals("native")){
+			current_user.cleanUser(this);
+			startActivity(new Intent(this, loginActivity.class));
+			finish();
+		}
+		else{
+			//es facebook
+			//Buscamos la session del usuario actual.
+			Session session = Session.getActiveSession();
+			//agregamos este log para probar que pasa con las token y como se comportan
+			Log.i("SESSION", session.getAccessToken());
+			//Serramos la sesion del usuario
+			session.closeAndClearTokenInformation();
+			current_user.cleanUser(this);
+			current_user = new User(this);
+		}
 	}
 	//metodo del boton de reciclar
 	public void onClick_recycle(View v)
@@ -378,8 +412,18 @@ public class MainActivity extends FragmentActivity {
 		Bundle b = new Bundle();					
 		b.putInt("event_id", -1); //pasamos un -1 ya que no se pasa un evento en particular a mostrar en el mapa
 		i.putExtras(b);
+		startActivity(    i);
+	}
+	//metodo del boton de sugerencias
+	public void onClick_suggestion(View v)
+	{
+		if (smenu.isMenuShowing()) 
+			smenu.showContent(true);
+
+		Intent i = new Intent(this, suggestionActivity.class);
 		startActivity(i);
 	}
+	
 	//metodo del boton de perfil o cuenta del usuario
 	public void onClick_account(View v)
 	{
@@ -392,6 +436,10 @@ public class MainActivity extends FragmentActivity {
 	//metodo del boton de denuncias
 	public void onClick_claims(View v)
 	{
+		// *********************************************************************************
+		// CODIGO FUERA DE ESTANDAR
+		// *********************************************************************************
+		// *********************************************************************************
 		if (smenu.isMenuShowing()) 
 			smenu.showContent(true);
 
@@ -416,50 +464,6 @@ public class MainActivity extends FragmentActivity {
 
 		startActivity(myIntent);
 	}
-	//este metodo se llama cuando hay algun cambio en la sesion de facebook para manejar los problemas
-	private void onSessionStateChange(Session session, SessionState state, Exception exception) {
-		// Solo hace cambios si la actividad esta visible
-		current_user = new User(this);
-		if (isResumed) {
-			FragmentManager manager = getSupportFragmentManager();
-			// Get the number of entries in the back stack
-			int backStackSize = manager.getBackStackEntryCount();
-			// Clear the back stack
-			for (int i = 0; i < backStackSize; i++) {
-				manager.popBackStack();
-			}
-			if (state.isOpened()) {
-
-				//VALIDAMOS CON EL SERVIDOR QUE EL USUARIO QUE INICIA SESION ES VALIDO
-				Log.i("SESSION", "Logged in...");
-				// TODO: Agregar progress dialog
-				this.validateUser(session,this);
-
-				//pedimos los permisos para publicar en facebook
-				requestPublishPermissions();
-
-				if(current_user.hasUniversity() && current_user.hasCampus()){
-					// Mostramos el menu princiapl de la aplicacion (SELECTION fragment)
-					showFragment(SELECTION, false);
-				}
-				else if(!current_user.hasCampus()){
-
-					this.goToInitialSetting();
-				}
-
-				//TODO: ver si hay reautorizaciones de permisos de usuarios para mandar la historia
-				//a facebook nuevamente				
-
-			} else if (state.isClosed()) {
-				// Si la sesion esta cerrada:
-				// Mostramos el fragment para iniciar sesion con facebook (SPLASH fragment)
-				Log.i("SESSION", "Logged out...");
-				showFragment(SPLASH, false);
-			}
-
-
-		}
-	}
 
 	//Este metodo muestra un fragment (que es una parte de una vista)
 	private void showFragment(int fragmentIndex, boolean addToBackStack) {
@@ -477,80 +481,9 @@ public class MainActivity extends FragmentActivity {
 		}
 		transaction.commit();
 	}
-	//este es un listenter que avisa cuando hay un cambio de estado en la sesion
-	//este metodo hace overide del metodo call()
-
-	private Session.StatusCallback callback = 
-
-			new Session.StatusCallback() {
-		@Override
-		public void call(Session session, 
-				SessionState state, Exception exception) {
-			onSessionStateChange(session, state, exception);
-		}
-	};
-	private void validateUser(Session session, final Context context) {
-		JSONObject object = new JSONObject();
-		try {
-			object.put("access_token", session.getAccessToken());
-		} catch (JSONException e1) {
-
-			e1.printStackTrace();
-		}
-
-		String url = "http://smartcampus.ing.puc.cl/mobile_users/login";
-
-		JsonObjectRequest jr = new JsonObjectRequest(com.android.volley.Request.Method.POST,url,object,new com.android.volley.Response.Listener<JSONObject>() {
-			@Override
-			public void onResponse(JSONObject response) {
-				Log.i("Volley",response.toString());
-				//				if(response.get("authenticated") == "true")
-				//				validatedUser = true;
-				//Como la respuesta es efectiva y se ha validado el usuario, creamos al usuario.
-
-				try {
-					if(current_user == null && response.getString("authenticated")=="true"){
-						current_user= new User();
-						current_user.setApiToken(response.getString("api_token"));
-						current_user.saveUser(context);
-						Log.i("Volley","Se creo un nuevo usuario");
-					}
-					else
-					{
-						current_user.setApiToken(response.getString("api_token"));
-						current_user.saveUser(context);
-						Log.i("Volley","Se reutilizo el usuario");
-						Log.e("APITOKEN",current_user.getApiToken());
-
-					}
-					goToInitialSetting();
-
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-			}
-		},new com.android.volley.Response.ErrorListener() {
-			@Override
-			public void onErrorResponse(VolleyError error) {
-				Log.i("VOLLEY","");
-			}
-		});
-		requestQueue.add(jr);
-
-
-	}
-
-	private boolean isSubsetOf(Collection<String> subset, Collection<String> superset) {
-		for (String string : subset) {
-			if (!superset.contains(string)) {
-				return false;
-			}
-		}
-		return true;
-	}
+	
 }
+
 class UpdateTimeTask extends TimerTask  {
 	private int[] elements;
 	private ViewPager vp;

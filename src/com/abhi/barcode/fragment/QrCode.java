@@ -24,10 +24,10 @@ import android.support.v4.app.FragmentActivity;
 import android.view.Window;
 import android.widget.TextView;
 
-import com.scampus.especial1.R;
+import com.scampus.uc.R;
 import com.scampus.tools.dontShowAgain;
 
-import com.scampus.especial1.R;
+import com.scampus.uc.R;
 
 public class QrCode extends FragmentActivity {
 	@Override
